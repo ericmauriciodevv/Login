@@ -2,8 +2,9 @@ const express = require('express')
 const fs = require('fs')
 const app = express()
 const json = require('./database')
-const { parseArgs } = require('util')
- 
+const {writeJSON, readJSON} =  require('./pushFile')
+
+
 
 const port = 3000
 
@@ -12,19 +13,20 @@ app.get('/user/post/:user/:pw', (req,res)=>{
     const pwStrign = req.params['pw']
     let pw = parseInt(pwStrign)
 
-    const dataFIltered = json.data.filter(item => item.pw === pw)
-    const data = { name: user, pw: pw}
-    const dataString = toString(data)
+    const dataFiltered = json.data.filter(item => item.pw === pw)
+
+    const info = {name: user, pw: pw}
+    
+    
+    
+    
 
 
-    if(dataFIltered[0].name === user && dataFIltered[0].pw === pw){
+    if(dataFiltered.length > 0 && dataFiltered[0].name === user && dataFiltered[0].pw === pw){
         res.send("data already established in the database")
     }else{
-
-
         try{
-            fs.writeFileSync('./database', dataString)
-            console.log("File has been sended")
+            console.log('hola')
         }catch(err){
             console.log(err)
         }
@@ -37,21 +39,18 @@ app.get('/user/post/:user/:pw', (req,res)=>{
 
 
 
-
-
 app.get('/user/:user/:pw', (req,res)=>{
-    const user = req.params['user']
-    const pwString = req.params['pw']
+    const user = req.params['user'];
+    const pwString = req.params['pw'];
     let pw = parseInt(pwString)
 
-    const dataFIltered = json.data.filter(item => item.pw === pw && item.name === user)
+    const dataFiltered = json.data.filter(item => item.pw === pw && item.name === user)
+    
 
-    if(dataFIltered[0].name === user && dataFIltered[0].pw === pw){
-        res.send(dataFIltered)
-        console.log('loged')
+    if(dataFiltered.length > 0 && dataFiltered[0].name === user && dataFiltered[0].pw === pw){
+        res.send(dataFiltered)
     }else{
-        res.send("User didin't founded")
-        console.log("User didin't founded cause: ", dataFIltered[0].name)
+        res.status(404).send("usuario no encontrado")
     }
 })
 
